@@ -19,7 +19,9 @@ module DeviseGoogleAuthenticator::Patches
 
         if resource.respond_to?(:get_qr) and resource.gauth_enabled? and resource.require_token?(cookies.signed[:gauth]) #Therefore we can quiz for a QR
           tmpid = resource.assign_tmp #assign a temporary key and fetch it
+          user_return_to_path = stored_location_for(:user)  #save the original url that the user was going to before the login interruption
           warden.logout #log the user out
+          store_location_for(:user, user_return_to_path)
 
           #we head back into the checkga controller with the temporary id
           #Because the model used for google auth may not always be the same, and may be a sub-model, the eval will evaluate the appropriate path name
