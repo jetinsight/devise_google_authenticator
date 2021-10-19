@@ -16,7 +16,11 @@ module Devise # :nodoc:
 	@@ga_remembertime = 1.month
 
 	mattr_accessor :ga_appname
-	@@ga_appname = Rails.application.class.parent_name
+	if Rails::VERSION::MAJOR >= 6
+		@@ga_appname = Rails.application.class.module_parent_name
+	else
+		@@ga_appname = Rails.application.class.parent_name
+	end
 
 	mattr_accessor :ga_bypass_signup
 	@@ga_bypass_signup = false
