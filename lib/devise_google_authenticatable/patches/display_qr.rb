@@ -11,7 +11,9 @@ module DeviseGoogleAuthenticator::Patches
         build_resource(sign_up_params)
 
         if resource.save
-          yield resource if block_given?
+	  # Ruby 3.0 does not allow yeild in a singleton class	
+          # yield resource if block_given?
+	  raise('yield disabled for Ruby 3.0 upgrade') if block_given?
           if resource.active_for_authentication?
             set_flash_message :notice, :signed_up if is_flashing_format?
             sign_in(resource_name, resource)
