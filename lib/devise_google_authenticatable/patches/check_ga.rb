@@ -13,7 +13,7 @@ module DeviseGoogleAuthenticator::Patches
         "#{name}_checkga_path(id:'#{id}')"
       end
 
-      define_method :create do
+      define_method :create do |&block|
 
         resource = warden.authenticate!(:scope => resource_name, :recall => "#{controller_path}#new")
 
@@ -37,6 +37,9 @@ module DeviseGoogleAuthenticator::Patches
         else #It's not using, or not enabled for Google 2FA, OR is remembering token and therefore not asking for the moment - carry on, nothing to see here.
           set_flash_message(:notice, :signed_in) if is_flashing_format?
           sign_in(resource_name, resource)
+          # Patch to ensure we can reset session properly for a saml login before redirects set
+          block.call(resource) if block.present?
+          # END: Patch to ensure we can reset session properly for a saml login before redirects set
           respond_with resource, :location => after_sign_in_path_for(resource)
         end
 
